@@ -1,0 +1,20 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+
+# Large upstream dataset — never commit (see README for how to obtain it)
+codex_swebenchpro.json
+
+# Real captures embed licensed dataset + agent content — commit only the
+# scrubbed web/*.sample.json (see `kvlens scrub`)
+web/run.json
+web/kv_events.json
+
+# OS / editor
+.DS_Store
