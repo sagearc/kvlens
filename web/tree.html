@@ -25,14 +25,14 @@
     </div>
   </header>
 
-  <div class="toolbar">
-    <div class="legend" id="legend"></div>
-    <div class="stats mono" id="stats"></div>
-  </div>
-
-  <!-- The tree is rebuilt from the granular block map each frame; merging of
-       adjacent same-type blocks happens here at render time, not in the data. -->
-  <main class="tree" id="tree"></main>
+  <section class="panel">
+    <div class="toolbar">
+      <div class="legend" id="legend"></div>
+      <div class="stats mono" id="stats"></div>
+    </div>
+    <!-- merging of adjacent same-type blocks happens at render time, not in data -->
+    <main class="tree" id="tree"></main>
+  </section>
 
   <aside class="detail" id="detail" hidden>
     <div class="detail-head"><span id="detail-title"></span>
