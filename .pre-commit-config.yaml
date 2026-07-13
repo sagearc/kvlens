@@ -13,3 +13,10 @@ repos:
       - id: check-yaml
       - id: check-added-large-files
         args: [--maxkb=1024]
+  - repo: local
+    hooks:
+      - id: no-dataset-leak
+        name: no real dataset content in web/*.json
+        entry: python scripts/check_no_leak.py
+        language: system
+        files: ^web/.*\.json$
