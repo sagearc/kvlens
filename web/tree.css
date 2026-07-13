@@ -1,54 +1,17 @@
-/* Radix-tree tab — reuse & divergence view. Independent of the Sessions tab. */
+/* Radix-tree tab. Base tokens + chrome (topbar, tabs, buttons, type system)
+   come from style.css; only tree-specific structure lives here. Session
+   identity uses the shared palette so a session reads the same across tabs. */
 .viz-root {
-  --surface-1: #fcfcfb; --plane: #f7f7f4; --ink: #0b0b0b; --ink-2: #52514e;
-  --muted: #8b8983; --hair: #e6e5df; --ring: rgba(11,11,11,.08);
-  --shadow: 0 1px 2px rgba(11,11,11,.04), 0 8px 24px rgba(11,11,11,.05);
-
-  /* session identity hues (distinct pairs) + shared/reused = green */
-  --sess-0: #2a78d6; --sess-1: #eb6834; --sess-2: #4a3aa7;
-  --sess-3: #e87ba4; --sess-4: #1baf7a; --sess-5: #eda100;
-  --shared: #0ca30c;
-  --evicted: #b9b7b0;
-
-  color-scheme: light dark;
-  background: var(--plane); color: var(--ink);
-  font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
-  margin: 0; height: 100vh; overflow: hidden;
-  display: grid; grid-template-rows: auto auto minmax(0, 1fr);
+  --sess-0: var(--s0); --sess-1: var(--s1); --sess-2: var(--s2);
+  --sess-3: var(--s3); --sess-4: var(--s4); --sess-5: var(--s5);
+  --shared: #0ca30c;   /* reused across ≥2 sessions */
+  --evicted: #b9b7b0;  /* dropped from the pool */
 }
-@media (prefers-color-scheme: dark) {
-  .viz-root {
-    --surface-1: #1a1a19; --plane: #0d0d0d; --ink: #fff; --ink-2: #c3c2b7;
-    --muted: #8b8983; --hair: #2c2c2a; --ring: rgba(255,255,255,.10); --shadow: none;
-    --sess-0: #3987e5; --sess-1: #d95926; --sess-2: #9085e9;
-    --sess-3: #d55181; --sess-4: #199e70; --sess-5: #c98500;
-    --shared: #0ca30c; --evicted: #4a4a46;
-  }
-}
-.mono { font-variant-numeric: tabular-nums; }
-
-/* top bar */
-.topbar { display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
-  padding: 10px 20px; border-bottom: 1px solid var(--hair); background: var(--surface-1); }
-.tabs { display: flex; align-items: center; gap: 4px; }
-.tabs a { text-decoration: none; color: var(--ink-2); font-weight: 650; font-size: 15px;
-  padding: 4px 12px; border-radius: 8px; }
-.tabs a.on { background: color-mix(in oklab, var(--sess-0) 14%, transparent); color: var(--sess-0); }
-.tabs a:hover:not(.on) { background: var(--plane); }
-.title .sub { margin: 3px 0 0; color: var(--muted); font-size: 12px; }
-.transport { display: flex; align-items: center; gap: 12px; flex: 1; min-width: 280px; }
-.btn { border: 1px solid var(--ring); background: var(--surface-1); color: var(--ink);
-  width: 34px; height: 34px; border-radius: 8px; cursor: pointer; }
-.btn:hover { border-color: var(--muted); }
-.scrub { flex: 1; accent-color: var(--sess-0); }
-.live { font-size: 11px; color: var(--shared); opacity: .35; }
-.viz-root.playing .live { animation: pulse 1.6s ease-in-out infinite; }
-@keyframes pulse { 0%,100% { opacity: .35; } 50% { opacity: 1; } }
+@media (prefers-color-scheme: dark) { .viz-root { --evicted: #4a4a46; } }
 
 /* legend + stats */
 .toolbar { display: flex; justify-content: space-between; align-items: center; gap: 16px;
-  flex-wrap: wrap; padding: 8px 20px; border-bottom: 1px solid var(--hair);
-  background: var(--surface-1); font-size: 12px; }
+  flex-wrap: wrap; padding: 10px 0; border-bottom: 1px solid var(--hair); font-size: 12px; }
 .legend { display: flex; gap: 14px; flex-wrap: wrap; color: var(--ink-2); }
 .legend span { display: inline-flex; align-items: center; gap: 6px; }
 .legend i { width: 11px; height: 11px; border-radius: 3px; display: inline-block; }
@@ -56,7 +19,7 @@
 .stats b { color: var(--ink); font-weight: 650; }
 
 /* tree canvas */
-.tree { overflow: auto; padding: 14px 20px 40px; max-width: 900px; }
+.tree { padding: 16px 0 48px; }
 
 /* a run of merged blocks = one card, accent-colored by session (or shared) */
 .pill { --c: var(--muted); display: block; min-width: 0; cursor: pointer;

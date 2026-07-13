@@ -79,20 +79,26 @@ function gc() { // evicted leaf -> prune (cascade); evicted w/ children -> keep 
   }
 }
 function subtreeSizes(kids) {
-  const size = new Map();
+  const size = new Map(), busy = new Set();
   const calc = (h) => {
     if (size.has(h)) return size.get(h);
+    if (busy.has(h)) return 0; // cycle guard (malformed parent data)
+    busy.add(h);
     let s = 1;
     for (const c of kids.get(h) || []) s += calc(c);
+    busy.delete(h);
     return size.set(h, s), s;
   };
   for (const h of state.nodes.keys()) calc(h);
   return size;
 }
-function leafCount(kids, h, memo = new Map()) {
+function leafCount(kids, h, memo = new Map(), busy = new Set()) {
   if (memo.has(h)) return memo.get(h);
+  if (busy.has(h)) return 0; // cycle guard
+  busy.add(h);
   const cs = kids.get(h) || [];
-  const l = cs.length === 0 ? 1 : cs.reduce((a, c) => a + leafCount(kids, c, memo), 0);
+  const l = cs.length === 0 ? 1 : cs.reduce((a, c) => a + leafCount(kids, c, memo, busy), 0);
+  busy.delete(h);
   return memo.set(h, l), l;
 }
 
@@ -257,8 +263,8 @@ function showBlocks(title, hashes) {
 
 // ---- load + transport ----
 async function main() {
-  const res = await fetch("kv_events.json").then((r) => (r.ok ? r : fetch("kv_events.sample.json")));
-  const run = await res.json();
+  const src = new URLSearchParams(location.search).get("data") || "kv_events.json";
+  const run = await (await fetch(src)).json();
   state.content = run.content || {};
   state.blockSize = run.meta.block_size;
   state.sessions = run.meta.sessions || [];
