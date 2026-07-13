@@ -1,11 +1,10 @@
 // Plays a captured Codex-trace run turn by turn (~2s each) for a live feel.
 // Every number is the engine's; this file only maps turn state -> DOM.
 import { sessionColor } from "./palette.js";
+import { $, n, pct, loadData } from "./util.js";
+import { makeTransport } from "./transport.js";
 
-const $ = (s) => document.querySelector(s);
 const tpl = (id) => document.getElementById(id).content.firstElementChild;
-const n = (x) => x.toLocaleString("en-US");
-const pct = (x) => `${Math.round(x * 100)}%`;
 // The dataset redacts prose to lorem-ipsum; collapse each such run to a marker
 // so the real content (commands, paths) stays legible.
 const cleanText = (s) => s.replace(/lorem ipsum(?:(?!\n\n)[\s\S])*/gi, "⟨redacted prose⟩");
@@ -27,22 +26,16 @@ const TILES = [
 ];
 
 async function main() {
-  const src = new URLSearchParams(location.search).get("data") || "run.json";
-  const run = await (await fetch(src)).json();
+  const run = await loadData("run.json");
   const { meta, groups, sessions, turns } = run;
-  const maxCtx = Math.max(...turns.map((t) => t.context_tokens));
 
   const shortModel = meta.model.split("/").pop();
   $("#meta-line").textContent =
     `${shortModel} · ${meta.dataset.traces} traces · capped at ` +
     `${Math.round(meta.max_model_len / 1024)}K tokens`;
   $("#groups-line").textContent = groupsSummary(groups, meta);
-  buildLegend(sessions);
   const tileRefs = buildTiles();
   const chat = makeChatView(turns, sessions);
-
-  const scrub = $("#scrub");
-  scrub.max = turns.length - 1;
 
   const render = (t) => {
     const turn = turns[t];
@@ -57,14 +50,13 @@ async function main() {
       el.textContent = next;
       el.nextElementSibling.textContent = tile.note(turn, meta);
     }
-    drawSpark(turns, sessions, maxCtx, t);
+    renderLegend(turns, sessions, t);
+    drawSpark(turns, sessions, t);
     chat.upTo(t);
-    scrub.value = t;
     $("#step-label").textContent = `turn ${t + 1} / ${turns.length}`;
   };
 
-  const param = new URLSearchParams(location.search).get("t");
-  makeTransport(turns.length, render, param == null ? null : +param);
+  makeTransport({ count: turns.length, stepMs: STEP_MS, param: "t", onStep: render });
 }
 
 function groupsSummary(groups, meta) {
@@ -86,15 +78,18 @@ function buildTiles() {
   return refs;
 }
 
-function buildLegend(sessions) {
-  const host = $("#legend");
-  for (const s of sessions) {
+// Live legend: only sessions that have arrived by turn `upto`, each showing its
+// context so far (never the final size — that would reveal the future).
+function renderLegend(turns, sessions, upto) {
+  const cur = new Map();
+  for (const t of turns) if (t.t <= upto) cur.set(t.session, t.context_tokens);
+  $("#legend").replaceChildren(...sessions.filter((s) => cur.has(s.id)).map((s) => {
     const el = document.createElement("span");
     const dot = document.createElement("i");
     dot.style.background = sessionColor(s.id);
-    el.append(dot, `${s.label} · ${n(s.final_context_tokens)} tok`);
-    host.appendChild(el);
-  }
+    el.append(dot, `${s.label} · ${n(cur.get(s.id))} tok`);
+    return el;
+  }));
 }
 
 let flashTimer = new WeakMap();
@@ -106,11 +101,14 @@ function flash(el) {
 
 // --- sparkline: context tokens (y) over play order (x), one line per session ---
 const VB_W = 1000, VB_H = 400, PAD = 12;
-function drawSpark(turns, sessions, maxCtx, upto) {
+function drawSpark(turns, sessions, upto) {
   const svg = $("#spark");
   svg.setAttribute("viewBox", `0 0 ${VB_W} ${VB_H}`);
   svg.setAttribute("preserveAspectRatio", "none");
   const N = turns.length;
+  // Axis scales to the largest context seen SO FAR, so it grows live rather
+  // than being pre-scaled to the (future) final maximum.
+  const maxCtx = Math.max(1, ...turns.filter((t) => t.t <= upto).map((t) => t.context_tokens));
   const x = (t) => (N === 1 ? 0 : (t / (N - 1)) * VB_W);
   const y = (v) => VB_H - PAD - (v / maxCtx) * (VB_H - 2 * PAD);
 
@@ -201,23 +199,6 @@ function setupText(el, btn, field, moreLabel) {
       };
     }
   });
-}
-
-function makeTransport(nTurns, render, start) {
-  const playBtn = $("#play"), scrub = $("#scrub"), body = document.body;
-  let t = 0, timer = null;
-  const seek = (v) => { t = Math.max(0, Math.min(nTurns - 1, v)); render(t); };
-  const stop = () => { clearInterval(timer); timer = null; playBtn.textContent = "▶"; body.classList.remove("playing"); };
-  const play = () => {
-    if (t >= nTurns - 1) seek(0);
-    playBtn.textContent = "❚❚"; body.classList.add("playing");
-    timer = setInterval(() => (t >= nTurns - 1 ? stop() : seek(t + 1)), STEP_MS);
-  };
-  playBtn.onclick = () => (timer ? stop() : play());
-  scrub.oninput = () => { stop(); seek(+scrub.value); };
-  if (start != null) { seek(start); return; } // deep-link: hold on this turn
-  seek(0);
-  play(); // autostart → live feel
 }
 
 main();

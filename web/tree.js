@@ -7,8 +7,9 @@
 // visual — run-merging, divergence, prune/dim — is derived at draw time, so
 // live events never do split/merge bookkeeping. Collapse is pure UI state
 // (a set of branch-root hashes) and is orthogonal to the tree operations.
-const $ = (s) => document.querySelector(s);
-const n = (x) => x.toLocaleString("en-US");
+import { $, n, loadData } from "./util.js";
+import { makeTransport } from "./transport.js";
+
 const SHORT = { full_attention: "FA", sliding_window: "SWA", mamba: "Mamba",
   mla: "MLA", chunked_local: "Local" };
 const DENSE = new Set(["FA", "MLA"]);          // authoritative for the backbone
@@ -26,7 +27,10 @@ const collapsed = new Set(); // branch-root hashes the user collapsed (UI state)
 const typesOf = (nd) => new Set([...nd.groups].map((g) => state.groupType.get(g) ?? "?"));
 const sessKey = (nd) => [...nd.sessions].sort((a, b) => a - b).join(",");
 const sessLabel = (id) => state.sessions[id]?.label ?? `session ${id + 1}`;
-const mergeKey = (nd) => `${sessKey(nd)}|${[...typesOf(nd)].sort().join("+")}|${nd.groups.size === 0}`;
+const atypeOf = (nd) => [...typesOf(nd)].sort().join("+"); // e.g. "FA", "FA+SWA"
+// Merge along a chain by session-set + eviction only — NOT attention type, so a
+// merged block can span FA / FA+SWA / SWA and lists the types it contains.
+const mergeKey = (nd) => `${sessKey(nd)}|${nd.groups.size === 0}`;
 const snippet = (h) => (state.content[h] || "").replace(/\s+/g, " ").trim();
 function sessColor(sessions) {
   if (sessions.size === 0) return "var(--evicted)";
@@ -92,12 +96,15 @@ function subtreeSizes(kids) {
   for (const h of state.nodes.keys()) calc(h);
   return size;
 }
-function leafCount(kids, h, memo = new Map(), busy = new Set()) {
+// Count real branch tips (continuation paths), ignoring size-1 turn-boundary
+// stubs — those are dead-ends shown as a note, not leaves. So a linear chain
+// has 1 leaf, and a node that truly forks into N paths has N.
+function leafCount(kids, size, h, memo = new Map(), busy = new Set()) {
   if (memo.has(h)) return memo.get(h);
   if (busy.has(h)) return 0; // cycle guard
   busy.add(h);
-  const cs = kids.get(h) || [];
-  const l = cs.length === 0 ? 1 : cs.reduce((a, c) => a + leafCount(kids, c, memo, busy), 0);
+  const reals = (kids.get(h) || []).filter((c) => size.get(c) > 1);
+  const l = reals.length === 0 ? 1 : reals.reduce((a, c) => a + leafCount(kids, size, c, memo, busy), 0);
   busy.delete(h);
   return memo.set(h, l), l;
 }
@@ -113,6 +120,14 @@ function draw() {
   for (const [h, nd] of state.nodes)
     if ((nd.parentH == null || !state.nodes.has(nd.parentH)) && !seen.has(h))
       buildChain(h, tree, seen, kids, size);
+  // Legend reflects only sessions present in the tree so far — never the future.
+  const present = new Set();
+  let anyShared = false;
+  for (const nd of state.nodes.values()) {
+    nd.sessions.forEach((s) => present.add(s));
+    if (nd.sessions.size > 1) anyShared = true;
+  }
+  renderLegend(present, anyShared);
   updateStats(kids, size);
 }
 
@@ -140,7 +155,7 @@ function buildChain(startH, container, seen, kids, size, ctxSessKey = "") {
       stubs.forEach((s) => { runStubs.push(s); seen.add(s); });
       break;
     }
-    container.appendChild(pillEl(run, runStubs, leafCount(kids, cur), ctxSessKey));
+    container.appendChild(pillEl(run, runStubs, leafCount(kids, size, cur), ctxSessKey));
 
     if (reals.length === 1) { h = reals[0]; continue; }   // type change → same thread
     if (reals.length > 1) {                               // real divergence → threads
@@ -148,7 +163,7 @@ function buildChain(startH, container, seen, kids, size, ctxSessKey = "") {
       container.appendChild(divergeEl(reals.length));
       for (const c of reals) {
         const isOpen = !collapsed.has(c);
-        const { wrap, body } = branchEl(c, size.get(c), leafCount(kids, c), isOpen);
+        const { wrap, body } = branchEl(c, size.get(c), leafCount(kids, size, c), isOpen);
         container.appendChild(wrap);
         // inside a branch, pills inherit its session, so they omit the label
         if (isOpen) buildChain(c, body, seen, kids, size, sessKey(state.nodes.get(c)));
@@ -164,7 +179,9 @@ function pillEl(run, stubs, leaves, ctxSessKey = "") {
   const sh = nd.sessions.size > 1, ev = nd.groups.size === 0;
   pill.className = `pill${sh ? " shared" : ""}${ev ? " evicted" : ""}`;
   pill.style.setProperty("--c", sessColor(nd.sessions));
-  const atype = [...typesOf(nd)].sort().join("+") || "—";
+  // distinct attention types contained in this merged run (a block may hold
+  // several groups; a run may mix FA-only and FA+SWA blocks)
+  const types = ev ? [] : [...new Set(run.map((h) => atypeOf(state.nodes.get(h))).filter(Boolean))];
   const head = document.createElement("div");
   head.className = "pill-head";
   // The session label is redundant inside its own thread (the branch header +
@@ -173,7 +190,7 @@ function pillEl(run, stubs, leaves, ctxSessKey = "") {
   const showWho = sessKey(nd) !== ctxSessKey;
   head.innerHTML =
     (showWho ? `<span class="who">${sessText(nd.sessions)}</span>` : "") +
-    `<span class="atype">${atype}</span>` +
+    types.map((t) => `<span class="atype">${t}</span>`).join("") +
     `<span class="count mono">×${run.length}</span>` +
     `<span class="toks mono">${n(run.length * state.blockSize)} tok</span>` +
     `<span class="leaves mono" title="leaf paths under this node">⌂ ${n(leaves)}</span>`;
@@ -192,7 +209,7 @@ function pillEl(run, stubs, leaves, ctxSessKey = "") {
     st.onclick = (e) => { e.stopPropagation(); showBlocks("Turn-boundary blocks", stubs); };
     pill.appendChild(st);
   }
-  pill.onclick = () => showBlocks(`${sessText(nd.sessions)} · ${atype}`, run);
+  pill.onclick = () => showBlocks(`${sessText(nd.sessions)}${types.length ? " · " + types.join(", ") : ""}`, run);
   return pill;
 }
 
@@ -214,7 +231,7 @@ function branchEl(rootHash, blocks, leaves, isOpen) {
   head.innerHTML =
     `<span class="caret">${isOpen ? "▾" : "▸"}</span>` +
     `<span class="btag">${sessText(nd.sessions)}</span>` +
-    `<span class="bmeta mono">${n(blocks)} blocks · ${n(leaves)} leaves${isOpen ? "" : " · hidden"}</span>`;
+    `<span class="bmeta mono">${n(blocks)} blocks · ${n(leaves)} leaf${leaves === 1 ? "" : "s"}${isOpen ? "" : " · hidden"}</span>`;
   head.onclick = () => { collapsed.has(rootHash) ? collapsed.delete(rootHash) : collapsed.add(rootHash); draw(); };
   const body = document.createElement("div");
   body.className = "branch-body";
@@ -246,9 +263,11 @@ function showBlocks(title, hashes) {
   $("#detail-body").replaceChildren(...hashes.map((h, i) => {
     const el = document.createElement("div");
     el.className = "blk";
+    const nd = state.nodes.get(h);
+    const type = nd ? (atypeOf(nd) || "evicted") : "—";
     const head = document.createElement("div");
     head.className = "h";
-    head.textContent = `block ${i + 1} · #${h.slice(0, 10)}`;
+    head.textContent = `block ${i + 1} · ${type} · #${h.slice(0, 10)}`;
     el.appendChild(head);
     const text = state.content[h];
     if (text) {
@@ -263,15 +282,13 @@ function showBlocks(title, hashes) {
 
 // ---- load + transport ----
 async function main() {
-  const src = new URLSearchParams(location.search).get("data") || "kv_events.json";
-  const run = await (await fetch(src)).json();
+  const run = await loadData("kv_events.json");
   state.content = run.content || {};
   state.blockSize = run.meta.block_size;
   state.sessions = run.meta.sessions || [];
   for (const g of run.meta.groups) state.groupType.set(g.id, SHORT[g.attention_type] ?? "?");
-  buildLegend();
   $("#meta-line").textContent =
-    `${run.meta.model} · ${state.sessions.length} sessions · ${run.meta.groups.length} KV groups · block ${run.meta.block_size}`;
+    `${run.meta.model} · ${run.meta.groups.length} KV groups · block ${run.meta.block_size}`;
 
   const frames = run.frames;
   const seekTo = (t) => {
@@ -279,16 +296,16 @@ async function main() {
     for (let i = 0; i <= t && i < frames.length; i++)
       for (const e of frames[i].ev) applyEvent(e, frames[i].s ?? 0);
     draw();
-    $("#scrub").value = t;
     $("#step-label").textContent = `frame ${t + 1} / ${frames.length}`;
   };
-  $("#scrub").max = frames.length - 1;
-  makeTransport(frames.length, seekTo);
+  $("#detail-close").onclick = () => ($("#detail").hidden = true);
+  makeTransport({ count: frames.length, stepMs: FRAME_MS, param: "f", onStep: seekTo });
 }
 
-function buildLegend() {
-  const items = state.sessions.map((s) => [`sess-${s.id % 6}`, s.label]);
-  items.push(["shared", "reused (≥2 sessions)"]);
+function renderLegend(presentIds, anyShared) {
+  const items = state.sessions.filter((s) => presentIds.has(s.id))
+    .map((s) => [`sess-${s.id % 6}`, s.label]);
+  if (anyShared) items.push(["shared", "reused (≥2 sessions)"]);
   $("#legend").replaceChildren(...items.map(([k, txt]) => {
     const s = document.createElement("span");
     const i = document.createElement("i");
@@ -296,24 +313,6 @@ function buildLegend() {
     s.append(i, txt);
     return s;
   }));
-}
-
-function makeTransport(nFrames, seek) {
-  const playBtn = $("#play"), scrub = $("#scrub"), body = document.body;
-  let t = 0, timer = null;
-  const go = (v) => { t = Math.max(0, Math.min(nFrames - 1, v)); seek(t); };
-  const stop = () => { clearInterval(timer); timer = null; playBtn.textContent = "▶"; body.classList.remove("playing"); };
-  const play = () => {
-    if (t >= nFrames - 1) go(0);
-    playBtn.textContent = "❚❚"; body.classList.add("playing");
-    timer = setInterval(() => (t >= nFrames - 1 ? stop() : go(t + 1)), FRAME_MS);
-  };
-  playBtn.onclick = () => (timer ? stop() : play());
-  scrub.oninput = () => { stop(); go(+scrub.value); };
-  $("#detail-close").onclick = () => ($("#detail").hidden = true);
-  const p = new URLSearchParams(location.search).get("f");
-  if (p != null) { go(+p); return; }
-  go(0); play();
 }
 
 main();
