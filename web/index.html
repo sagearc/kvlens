@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KV-Cache Simulator — agentic traces</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body class="viz-root">
+  <div class="app">
+  <header class="topbar">
+    <div class="title">
+      <nav class="tabs">
+        <a href="index.html" class="on" aria-current="page">Sessions</a>
+        <a href="tree.html">Radix tree</a>
+        <span class="live" id="live">● live</span>
+      </nav>
+      <p class="sub" id="meta-line">loading…</p>
+    </div>
+    <div class="transport">
+      <button id="play" class="btn" aria-label="play / pause">❚❚</button>
+      <input id="scrub" class="scrub" type="range" min="0" max="0" value="0"
+             aria-label="timeline" />
+      <span id="step-label" class="mono">turn 0 / 0</span>
+    </div>
+  </header>
+
+  <main class="stage">
+    <!-- Hero: the headline number + the context-growth story -->
+    <section class="card hero">
+      <div class="hero-num">
+        <span class="big mono" id="hit-rate">0%</span>
+        <span class="hero-label">of input tokens served from cache</span>
+        <span class="hero-note" id="hit-note"></span>
+      </div>
+    </section>
+
+    <section class="card growth">
+      <h2>Context growth <span class="hint">tokens per turn, by session</span></h2>
+      <svg id="spark" class="spark" preserveAspectRatio="none" aria-label="context growth"></svg>
+      <div class="legend" id="legend"></div>
+    </section>
+
+    <section class="card metrics">
+      <div id="tiles" class="tiles"></div>
+    </section>
+  </main>
+
+  <section class="chat" aria-label="agent sessions">
+    <div class="chat-head">
+      <h2>Sessions</h2>
+      <span class="meta" id="groups-line"></span>
+    </div>
+    <div class="chat-log" id="chat-log"></div>
+  </section>
+  </div>
+
+  <template id="tile-tpl">
+    <div class="tile">
+      <span class="tile-label"></span>
+      <span class="tile-value mono"></span>
+      <span class="tile-note"></span>
+    </div>
+  </template>
+
+  <template id="turn-tpl">
+    <div class="turn">
+      <div class="avatar"><span class="badge mono"></span></div>
+      <div class="turn-body">
+        <div class="turn-head">
+          <span class="who"></span>
+          <span class="when"></span>
+        </div>
+        <div class="split" title="cached (reused) vs new (prefilled) tokens">
+          <span class="seg cached"></span><span class="seg new"></span>
+        </div>
+        <div class="split-labels mono">
+          <span class="lbl-cached"></span><span class="lbl-new"></span>
+        </div>
+        <div class="ask clamp"></div>
+        <button class="more ask-more" hidden>show more</button>
+        <div class="reply clamp"></div>
+        <button class="more reply-more" hidden>show output</button>
+      </div>
+    </div>
+  </template>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>
