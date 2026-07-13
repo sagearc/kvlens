@@ -1,3 +1,5 @@
+@import url("https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap");
+
 /* Design tokens (dataviz reference palette) + a small type system.
    Roles: .eyebrow = constant region label (uppercase, muted);
           .meta = descriptive/technical metadata (muted sentence case);
@@ -23,7 +25,8 @@
   color-scheme: light dark;
   background: var(--plane);
   color: var(--ink);
-  font: 14px/1.5 system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+  font-size: 14px; line-height: 1.5; -webkit-font-smoothing: antialiased;
   margin: 0; min-height: 100vh;
 }
 @media (prefers-color-scheme: dark) {
@@ -48,15 +51,19 @@ h2, .eyebrow { margin: 0; font-size: 11px; font-weight: 600; color: var(--muted)
 .app { max-width: 1160px; margin: 0 auto; padding: 0 24px 56px; }
 
 /* ---- sticky top bar: brand + state (left), controls (right) ---- */
-.topbar { position: sticky; top: 0; z-index: 10; background: var(--plane);
-  display: flex; align-items: center; gap: 24px; flex-wrap: wrap;
-  padding: 16px 0 14px; border-bottom: 1px solid var(--hair); }
+.topbar { position: sticky; top: 0; z-index: 10;
+  background: color-mix(in oklab, var(--plane) 86%, transparent);
+  backdrop-filter: saturate(1.6) blur(10px);
+  display: flex; align-items: center; gap: 20px; flex-wrap: wrap;
+  padding: 13px 0; border-bottom: 1px solid var(--hair); }
 .title .sub { margin: 3px 0 0; }
-.tabs { display: flex; align-items: center; gap: 4px; }
-.tabs a { text-decoration: none; color: var(--ink-2); font-weight: 650; font-size: 15px;
-  padding: 4px 12px; border-radius: 8px; }
-.tabs a.on { background: color-mix(in oklab, var(--s0) 14%, transparent); color: var(--s0); }
-.tabs a:hover:not(.on) { background: var(--surface-1); }
+/* neutral segmented tabs — mature, not an "app" pill */
+.tabs { display: flex; align-items: center; gap: 2px; }
+.tabs a { text-decoration: none; color: var(--muted); font-weight: 500; font-size: 14px;
+  letter-spacing: -0.006em; padding: 5px 11px; border-radius: 7px;
+  transition: color .15s, background .15s; }
+.tabs a:hover:not(.on) { color: var(--ink); background: color-mix(in oklab, var(--ink) 5%, transparent); }
+.tabs a.on { color: var(--ink); font-weight: 600; background: color-mix(in oklab, var(--ink) 7%, transparent); }
 .live { font-size: 10px; color: var(--cached); margin-left: 8px; opacity: .3;
   letter-spacing: .04em; text-transform: uppercase; }
 .viz-root.playing .live { animation: pulse 1.6s ease-in-out infinite; }
