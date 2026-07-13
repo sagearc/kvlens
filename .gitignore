@@ -8,13 +8,12 @@ build/
 .pytest_cache/
 .ruff_cache/
 
-# Large upstream dataset — never commit (see README for how to obtain it)
+# Real trace datasets & private captures — never commit; the shipped demo data
+# is synthetic (see SECURITY.md). A pre-commit hook also guards web/*.json.
 codex_swebenchpro.json
-
-# Real captures embed licensed dataset + agent content — commit only the
-# scrubbed web/*.sample.json (see `kvlens scrub`)
-web/run.json
-web/kv_events.json
+*.private.json
+*.local.json
+examples/demo_trace.json
 
 # OS / editor
 .DS_Store

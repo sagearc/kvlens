@@ -27,9 +27,8 @@ const TILES = [
 ];
 
 async function main() {
-  // local capture if present, else the committed scrubbed sample (the demo)
-  const res = await fetch("run.json").then((r) => (r.ok ? r : fetch("run.sample.json")));
-  const run = await res.json();
+  const src = new URLSearchParams(location.search).get("data") || "run.json";
+  const run = await (await fetch(src)).json();
   const { meta, groups, sessions, turns } = run;
   const maxCtx = Math.max(...turns.map((t) => t.context_tokens));
 
