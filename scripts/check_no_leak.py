@@ -32,7 +32,7 @@ def main(paths: list[str]) -> int:
         if hit:
             print(
                 f"{p}: looks like real captured data (markers: {', '.join(hit)}). "
-                "The demo ships synthetic data only — see SECURITY.md."
+                "The demo must ship synthetic data only."
             )
             bad = True
     return 1 if bad else 0

@@ -40,13 +40,13 @@ kvlens serve
 ```
 
 The shipped demo is **synthetic** (`examples/gen_demo_trace.py`). Real traces can
-carry licensed content — never commit captures made from them; see
-[SECURITY.md](SECURITY.md).
+carry licensed content — never commit captures made from them (a pre-commit hook
+guards `web/*.json`).
 
-## More
+## Contributing
 
-Design system and contribution guide: [AGENTS.md](AGENTS.md) ·
-[CONTRIBUTING.md](CONTRIBUTING.md).
+`make setup`, then `make serve` (no vLLM needed). Design notes live in
+[AGENTS.md](AGENTS.md). PRs welcome.
 
-Apache-2.0. Built on [vLLM](https://github.com/vllm-project/vllm); avatars via
-[DiceBear](https://dicebear.com). AI assistance was used.
+Apache-2.0 · built on [vLLM](https://github.com/vllm-project/vllm) · avatars via
+[DiceBear](https://dicebear.com) · AI assistance was used.
