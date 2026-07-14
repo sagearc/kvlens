@@ -17,12 +17,13 @@ const avatarUrl = (seed) =>
   `https://api.dicebear.com/9.x/${AVATAR_STYLE}/svg?seed=${encodeURIComponent(seed)}`;
 
 const TILES = [
-  { key: "ctx", label: "Context length", val: (t) => n(t.context_tokens), note: () => "tokens in prompt" },
-  { key: "new", label: "New this turn", val: (t) => n(t.new_tokens), note: () => "prefilled (real cost)" },
+  { key: "mem", label: "KV memory", val: (t) => `${((t.mem_bytes || 0) / 1e9).toFixed(1)} GB`,
+    note: (t) => `${pct(t.kv_usage)} of pool` },
+  { key: "sess", label: "Sessions in memory", val: (t) => t.sessions_in_memory ?? 1,
+    note: () => "resident at once" },
+  { key: "new", label: "New this turn", val: (t) => n(t.new_tokens), note: () => "prefilled — real cost" },
   { key: "cached", label: "Cached this turn", val: (t) => n(t.cached_tokens), note: () => "reused from cache" },
-  { key: "turnhit", label: "Turn hit rate", val: (t) => pct(t.turn_hit_rate), note: () => "this prompt" },
-  { key: "usage", label: "KV cache usage", val: (t, m) => pct(t.kv_usage),
-    note: (t, m) => `${n(t.blocks_used)} / ${n(m.num_blocks)} blocks` },
+  { key: "ctx", label: "Context length", val: (t) => n(t.context_tokens), note: () => "tokens this turn" },
 ];
 
 async function main() {

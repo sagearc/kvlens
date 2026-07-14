@@ -2,8 +2,8 @@
   "meta": {
     "model": "allenai/Olmo-3-7B-Think",
     "block_size": 128,
-    "num_blocks": 1024,
-    "kv_pool_bytes": 17179869184,
+    "num_blocks": 4096,
+    "kv_pool_bytes": 68719476736,
     "max_model_len": 98304,
     "hybrid": true,
     "dataset": {
@@ -11,7 +11,7 @@
       "median_turns": 60,
       "note": "full dataset reaches ~237K tokens; this run capped at 98,304"
     },
-    "generated_at": "2026-07-14T03:51:55"
+    "generated_at": "2026-07-14T03:55:20"
   },
   "groups": [
     {
@@ -86,7 +86,7 @@
       "new_tokens": 4962,
       "turn_hit_rate": 0.0,
       "cum_hit_rate": 0.0,
-      "kv_usage": 0.1484,
+      "kv_usage": 0.0371,
       "blocks_used": 152,
       "mem_bytes": 2550136832,
       "mem_by_type": {
@@ -113,7 +113,7 @@
       "new_tokens": 136,
       "turn_hit_rate": 0.9728,
       "cum_hit_rate": 0.4883,
-      "kv_usage": 0.1523,
+      "kv_usage": 0.0381,
       "blocks_used": 156,
       "mem_bytes": 2617245696,
       "mem_by_type": {
@@ -140,7 +140,7 @@
       "new_tokens": 2562,
       "turn_hit_rate": 0.6608,
       "cum_hit_rate": 0.5627,
-      "kv_usage": 0.2305,
+      "kv_usage": 0.0576,
       "blocks_used": 236,
       "mem_bytes": 3959422976,
       "mem_by_type": {
@@ -167,7 +167,7 @@
       "new_tokens": 2753,
       "turn_hit_rate": 0.7328,
       "cum_hit_rate": 0.6257,
-      "kv_usage": 0.3125,
+      "kv_usage": 0.0781,
       "blocks_used": 320,
       "mem_bytes": 5368709120,
       "mem_by_type": {
@@ -194,7 +194,7 @@
       "new_tokens": 3036,
       "turn_hit_rate": 0.7713,
       "cum_hit_rate": 0.6727,
-      "kv_usage": 0.4023,
+      "kv_usage": 0.1006,
       "blocks_used": 412,
       "mem_bytes": 6912212992,
       "mem_by_type": {
@@ -221,7 +221,7 @@
       "new_tokens": 3245,
       "turn_hit_rate": 0.8025,
       "cum_hit_rate": 0.7098,
-      "kv_usage": 0.5,
+      "kv_usage": 0.125,
       "blocks_used": 512,
       "mem_bytes": 8589934592,
       "mem_by_type": {
@@ -248,7 +248,7 @@
       "new_tokens": 3394,
       "turn_hit_rate": 0.8284,
       "cum_hit_rate": 0.7401,
-      "kv_usage": 0.6016,
+      "kv_usage": 0.1504,
       "blocks_used": 616,
       "mem_bytes": 10334765056,
       "mem_by_type": {
@@ -275,7 +275,7 @@
       "new_tokens": 3647,
       "turn_hit_rate": 0.8439,
       "cum_hit_rate": 0.7642,
-      "kv_usage": 0.7109,
+      "kv_usage": 0.1777,
       "blocks_used": 728,
       "mem_bytes": 12213813248,
       "mem_by_type": {
@@ -302,7 +302,7 @@
       "new_tokens": 3857,
       "turn_hit_rate": 0.858,
       "cum_hit_rate": 0.7841,
-      "kv_usage": 0.8281,
+      "kv_usage": 0.207,
       "blocks_used": 848,
       "mem_bytes": 14227079168,
       "mem_by_type": {
@@ -329,7 +329,7 @@
       "new_tokens": 4014,
       "turn_hit_rate": 0.8711,
       "cum_hit_rate": 0.8012,
-      "kv_usage": 0.9492,
+      "kv_usage": 0.2373,
       "blocks_used": 972,
       "mem_bytes": 16307453952,
       "mem_by_type": {
@@ -356,11 +356,11 @@
       "new_tokens": 4244,
       "turn_hit_rate": 0.8799,
       "cum_hit_rate": 0.8155,
-      "kv_usage": 0.9951,
-      "blocks_used": 1019,
-      "mem_bytes": 17095983104,
+      "kv_usage": 0.2695,
+      "blocks_used": 1104,
+      "mem_bytes": 18522046464,
       "mem_by_type": {
-        "sliding_window": 12465471488,
+        "sliding_window": 13891534848,
         "full_attention": 4630511616
       },
       "sessions_in_memory": 1
@@ -383,11 +383,11 @@
       "new_tokens": 4424,
       "turn_hit_rate": 0.8887,
       "cum_hit_rate": 0.8279,
-      "kv_usage": 0.9951,
-      "blocks_used": 1019,
-      "mem_bytes": 17095983104,
+      "kv_usage": 0.3027,
+      "blocks_used": 1240,
+      "mem_bytes": 20803747840,
       "mem_by_type": {
-        "sliding_window": 11895046144,
+        "sliding_window": 15602810880,
         "full_attention": 5200936960
       },
       "sessions_in_memory": 1
@@ -410,11 +410,11 @@
       "new_tokens": 4711,
       "turn_hit_rate": 0.8939,
       "cum_hit_rate": 0.8384,
-      "kv_usage": 0.9951,
-      "blocks_used": 1019,
-      "mem_bytes": 17095983104,
+      "kv_usage": 0.3379,
+      "blocks_used": 1384,
+      "mem_bytes": 23219666944,
       "mem_by_type": {
-        "sliding_window": 11291066368,
+        "sliding_window": 17414750208,
         "full_attention": 5804916736
       },
       "sessions_in_memory": 1
@@ -437,11 +437,11 @@
       "new_tokens": 4948,
       "turn_hit_rate": 0.8995,
       "cum_hit_rate": 0.8476,
-      "kv_usage": 0.9951,
-      "blocks_used": 1019,
-      "mem_bytes": 17095983104,
+      "kv_usage": 0.375,
+      "blocks_used": 1536,
+      "mem_bytes": 25769803776,
       "mem_by_type": {
-        "sliding_window": 10653532160,
+        "sliding_window": 19327352832,
         "full_attention": 6442450944
       },
       "sessions_in_memory": 1
@@ -460,15 +460,15 @@
         "tokens": 17
       },
       "context_tokens": 4962,
-      "cached_tokens": 0,
-      "new_tokens": 4962,
-      "turn_hit_rate": 0.0,
-      "cum_hit_rate": 0.835,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cached_tokens": 4864,
+      "new_tokens": 98,
+      "turn_hit_rate": 0.9802,
+      "cum_hit_rate": 0.8496,
+      "kv_usage": 0.375,
+      "blocks_used": 1536,
+      "mem_bytes": 25769803776,
       "mem_by_type": {
-        "sliding_window": 10015997952,
+        "sliding_window": 19327352832,
         "full_attention": 6442450944
       },
       "sessions_in_memory": 1
@@ -490,12 +490,12 @@
       "cached_tokens": 4864,
       "new_tokens": 135,
       "turn_hit_rate": 0.973,
-      "cum_hit_rate": 0.837,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8514,
+      "kv_usage": 0.376,
+      "blocks_used": 1540,
+      "mem_bytes": 25836912640,
       "mem_by_type": {
-        "sliding_window": 9999220736,
+        "sliding_window": 19377684480,
         "full_attention": 6459228160
       },
       "sessions_in_memory": 2
@@ -517,12 +517,12 @@
       "cached_tokens": 4992,
       "new_tokens": 4208,
       "turn_hit_rate": 0.5426,
-      "cum_hit_rate": 0.8292,
-      "kv_usage": 0.9619,
-      "blocks_used": 985,
-      "mem_bytes": 16525557760,
+      "cum_hit_rate": 0.8432,
+      "kv_usage": 0.4082,
+      "blocks_used": 1672,
+      "mem_bytes": 28051505152,
       "mem_by_type": {
-        "sliding_window": 9512681472,
+        "sliding_window": 21038628864,
         "full_attention": 7012876288
       },
       "sessions_in_memory": 2
@@ -544,12 +544,12 @@
       "cached_tokens": 9088,
       "new_tokens": 4479,
       "turn_hit_rate": 0.6699,
-      "cum_hit_rate": 0.8232,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8367,
+      "kv_usage": 0.4424,
+      "blocks_used": 1812,
+      "mem_bytes": 30400315392,
       "mem_by_type": {
-        "sliding_window": 8858370048,
+        "sliding_window": 22800236544,
         "full_attention": 7600078848
       },
       "sessions_in_memory": 2
@@ -571,12 +571,12 @@
       "cached_tokens": 13440,
       "new_tokens": 4721,
       "turn_hit_rate": 0.74,
-      "cum_hit_rate": 0.8192,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8321,
+      "kv_usage": 0.4785,
+      "blocks_used": 1960,
+      "mem_bytes": 32883343360,
       "mem_by_type": {
-        "sliding_window": 8237613056,
+        "sliding_window": 24662507520,
         "full_attention": 8220835840
       },
       "sessions_in_memory": 2
@@ -598,13 +598,13 @@
       "cached_tokens": 18048,
       "new_tokens": 4855,
       "turn_hit_rate": 0.788,
-      "cum_hit_rate": 0.8174,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8296,
+      "kv_usage": 0.5156,
+      "blocks_used": 2112,
+      "mem_bytes": 35433480192,
       "mem_by_type": {
-        "sliding_window": 9160359936,
-        "full_attention": 7298088960
+        "sliding_window": 26575110144,
+        "full_attention": 8858370048
       },
       "sessions_in_memory": 2
     },
@@ -625,13 +625,13 @@
       "cached_tokens": 22784,
       "new_tokens": 5081,
       "turn_hit_rate": 0.8177,
-      "cum_hit_rate": 0.8175,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8288,
+      "kv_usage": 0.5537,
+      "blocks_used": 2268,
+      "mem_bytes": 38050725888,
       "mem_by_type": {
-        "sliding_window": 11123294208,
-        "full_attention": 5335154688
+        "sliding_window": 28538044416,
+        "full_attention": 9512681472
       },
       "sessions_in_memory": 2
     },
@@ -652,13 +652,13 @@
       "cached_tokens": 27776,
       "new_tokens": 5219,
       "turn_hit_rate": 0.8418,
-      "cum_hit_rate": 0.8192,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8297,
+      "kv_usage": 0.5928,
+      "blocks_used": 2428,
+      "mem_bytes": 40735080448,
       "mem_by_type": {
-        "sliding_window": 12717129728,
-        "full_attention": 3741319168
+        "sliding_window": 30551310336,
+        "full_attention": 10183770112
       },
       "sessions_in_memory": 2
     },
@@ -679,15 +679,15 @@
       "cached_tokens": 32896,
       "new_tokens": 5421,
       "turn_hit_rate": 0.8585,
-      "cum_hit_rate": 0.8222,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8319,
+      "kv_usage": 0.6338,
+      "blocks_used": 2596,
+      "mem_bytes": 43553652736,
       "mem_by_type": {
-        "sliding_window": 12029263872,
-        "full_attention": 4429185024
+        "sliding_window": 32665239552,
+        "full_attention": 10888413184
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 2
     },
     {
       "t": 23,
@@ -706,15 +706,15 @@
       "cached_tokens": 38272,
       "new_tokens": 5557,
       "turn_hit_rate": 0.8732,
-      "cum_hit_rate": 0.8263,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8352,
+      "kv_usage": 0.6758,
+      "blocks_used": 2768,
+      "mem_bytes": 46439333888,
       "mem_by_type": {
-        "sliding_window": 11341398016,
-        "full_attention": 5117050880
+        "sliding_window": 34829500416,
+        "full_attention": 11609833472
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 2
     },
     {
       "t": 24,
@@ -733,15 +733,15 @@
       "cached_tokens": 43776,
       "new_tokens": 5755,
       "turn_hit_rate": 0.8838,
-      "cum_hit_rate": 0.8311,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8393,
+      "kv_usage": 0.7197,
+      "blocks_used": 2948,
+      "mem_bytes": 49459232768,
       "mem_by_type": {
-        "sliding_window": 10603200512,
-        "full_attention": 5855248384
+        "sliding_window": 37094424576,
+        "full_attention": 12364808192
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 2
     },
     {
       "t": 25,
@@ -760,15 +760,15 @@
       "cached_tokens": 49408,
       "new_tokens": 5993,
       "turn_hit_rate": 0.8918,
-      "cum_hit_rate": 0.8363,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8438,
+      "kv_usage": 0.7646,
+      "blocks_used": 3132,
+      "mem_bytes": 52546240512,
       "mem_by_type": {
-        "sliding_window": 9831448576,
-        "full_attention": 6627000320
+        "sliding_window": 39409680384,
+        "full_attention": 13136560128
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 2
     },
     {
       "t": 26,
@@ -787,15 +787,15 @@
       "cached_tokens": 55296,
       "new_tokens": 6196,
       "turn_hit_rate": 0.8992,
-      "cum_hit_rate": 0.8417,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8486,
+      "kv_usage": 0.8115,
+      "blocks_used": 3324,
+      "mem_bytes": 55767465984,
       "mem_by_type": {
-        "sliding_window": 9026142208,
-        "full_attention": 7432306688
+        "sliding_window": 41825599488,
+        "full_attention": 13941866496
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 2
     },
     {
       "t": 27,
@@ -814,15 +814,15 @@
       "cached_tokens": 61440,
       "new_tokens": 6328,
       "turn_hit_rate": 0.9066,
-      "cum_hit_rate": 0.8474,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8536,
+      "kv_usage": 0.8594,
+      "blocks_used": 3520,
+      "mem_bytes": 59055800320,
       "mem_by_type": {
-        "sliding_window": 8220835840,
-        "full_attention": 8237613056
+        "sliding_window": 44291850240,
+        "full_attention": 14763950080
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 2
     },
     {
       "t": 28,
@@ -841,15 +841,15 @@
       "cached_tokens": 67712,
       "new_tokens": 6513,
       "turn_hit_rate": 0.9123,
-      "cum_hit_rate": 0.853,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8587,
+      "kv_usage": 0.9092,
+      "blocks_used": 3724,
+      "mem_bytes": 62478352384,
       "mem_by_type": {
-        "sliding_window": 7365197824,
-        "full_attention": 9093251072
+        "sliding_window": 46858764288,
+        "full_attention": 15619588096
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 2
     },
     {
       "t": 29,
@@ -868,15 +868,15 @@
       "cached_tokens": 74112,
       "new_tokens": 6757,
       "turn_hit_rate": 0.9164,
-      "cum_hit_rate": 0.8585,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8637,
+      "kv_usage": 0.96,
+      "blocks_used": 3932,
+      "mem_bytes": 65968013312,
       "mem_by_type": {
-        "sliding_window": 6492782592,
-        "full_attention": 9965666304
+        "sliding_window": 49476009984,
+        "full_attention": 16492003328
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 2
     },
     {
       "t": 30,
@@ -895,15 +895,15 @@
       "cached_tokens": 80768,
       "new_tokens": 6924,
       "turn_hit_rate": 0.921,
-      "cum_hit_rate": 0.8639,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8686,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 5603590144,
-        "full_attention": 10854858752
+        "sliding_window": 51237617664,
+        "full_attention": 17397972992
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 2
     },
     {
       "t": 31,
@@ -922,15 +922,15 @@
       "cached_tokens": 87680,
       "new_tokens": 7035,
       "turn_hit_rate": 0.9257,
-      "cum_hit_rate": 0.8691,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cum_hit_rate": 0.8735,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 4680843264,
-        "full_attention": 11777605632
+        "sliding_window": 50314870784,
+        "full_attention": 18320719872
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 2
     },
     {
       "t": 32,
@@ -946,16 +946,16 @@
         "tokens": 17
       },
       "context_tokens": 4962,
-      "cached_tokens": 0,
-      "new_tokens": 4962,
-      "turn_hit_rate": 0.0,
-      "cum_hit_rate": 0.8653,
-      "kv_usage": 0.958,
-      "blocks_used": 981,
-      "mem_bytes": 16458448896,
+      "cached_tokens": 4864,
+      "new_tokens": 98,
+      "turn_hit_rate": 0.9802,
+      "cum_hit_rate": 0.874,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 4043309056,
-        "full_attention": 12415139840
+        "sliding_window": 50314870784,
+        "full_attention": 18320719872
       },
       "sessions_in_memory": 2
     },
@@ -973,16 +973,16 @@
         "tokens": 17
       },
       "context_tokens": 4999,
-      "cached_tokens": 4864,
-      "new_tokens": 135,
-      "turn_hit_rate": 0.973,
-      "cum_hit_rate": 0.8658,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cached_tokens": 4992,
+      "new_tokens": 7,
+      "turn_hit_rate": 0.9986,
+      "cum_hit_rate": 0.8745,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 4026531840,
-        "full_attention": 12415139840
+        "sliding_window": 50314870784,
+        "full_attention": 18320719872
       },
       "sessions_in_memory": 2
     },
@@ -1003,15 +1003,15 @@
       "cached_tokens": 4992,
       "new_tokens": 5860,
       "turn_hit_rate": 0.46,
-      "cum_hit_rate": 0.8619,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cum_hit_rate": 0.8706,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 4227858432,
-        "full_attention": 12213813248
+        "sliding_window": 49559896064,
+        "full_attention": 19075694592
       },
-      "sessions_in_memory": 2
+      "sessions_in_memory": 3
     },
     {
       "t": 35,
@@ -1030,15 +1030,15 @@
       "cached_tokens": 10752,
       "new_tokens": 6168,
       "turn_hit_rate": 0.6355,
-      "cum_hit_rate": 0.8586,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cum_hit_rate": 0.8671,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 6643777536,
-        "full_attention": 9797894144
+        "sliding_window": 48754589696,
+        "full_attention": 19881000960
       },
-      "sessions_in_memory": 2
+      "sessions_in_memory": 3
     },
     {
       "t": 36,
@@ -1057,15 +1057,15 @@
       "cached_tokens": 16896,
       "new_tokens": 6308,
       "turn_hit_rate": 0.7282,
-      "cum_hit_rate": 0.856,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cum_hit_rate": 0.8644,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 9110028288,
-        "full_attention": 7331643392
+        "sliding_window": 47932506112,
+        "full_attention": 20703084544
       },
-      "sessions_in_memory": 2
+      "sessions_in_memory": 3
     },
     {
       "t": 37,
@@ -1084,15 +1084,15 @@
       "cached_tokens": 23168,
       "new_tokens": 6522,
       "turn_hit_rate": 0.7803,
-      "cum_hit_rate": 0.8541,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cum_hit_rate": 0.8623,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 11676942336,
-        "full_attention": 4764729344
+        "sliding_window": 47076868096,
+        "full_attention": 21558722560
       },
-      "sessions_in_memory": 2
+      "sessions_in_memory": 3
     },
     {
       "t": 38,
@@ -1111,15 +1111,15 @@
       "cached_tokens": 29568,
       "new_tokens": 6798,
       "turn_hit_rate": 0.8131,
-      "cum_hit_rate": 0.8529,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cum_hit_rate": 0.8609,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 12314476544,
-        "full_attention": 4127195136
+        "sliding_window": 49627004928,
+        "full_attention": 19008585728
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 3
     },
     {
       "t": 39,
@@ -1138,15 +1138,15 @@
       "cached_tokens": 36352,
       "new_tokens": 6918,
       "turn_hit_rate": 0.8401,
-      "cum_hit_rate": 0.8525,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cum_hit_rate": 0.8602,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 11408506880,
-        "full_attention": 5033164800
+        "sliding_window": 51103399936,
+        "full_attention": 17532190720
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 3
     },
     {
       "t": 40,
@@ -1165,15 +1165,15 @@
       "cached_tokens": 43264,
       "new_tokens": 7101,
       "turn_hit_rate": 0.859,
-      "cum_hit_rate": 0.8528,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cum_hit_rate": 0.8601,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 10485760000,
-        "full_attention": 5955911680
+        "sliding_window": 50214207488,
+        "full_attention": 18421383168
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 3
     },
     {
       "t": 41,
@@ -1192,15 +1192,15 @@
       "cached_tokens": 50304,
       "new_tokens": 7383,
       "turn_hit_rate": 0.872,
-      "cum_hit_rate": 0.8535,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cum_hit_rate": 0.8606,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 9546235904,
-        "full_attention": 6895435776
+        "sliding_window": 49274683392,
+        "full_attention": 19360907264
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 3
     },
     {
       "t": 42,
@@ -1219,15 +1219,15 @@
       "cached_tokens": 57600,
       "new_tokens": 7596,
       "turn_hit_rate": 0.8835,
-      "cum_hit_rate": 0.8549,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cum_hit_rate": 0.8616,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 8556380160,
-        "full_attention": 7885291520
+        "sliding_window": 48284827648,
+        "full_attention": 20350763008
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 3
     },
     {
       "t": 43,
@@ -1246,15 +1246,15 @@
       "cached_tokens": 65152,
       "new_tokens": 7754,
       "turn_hit_rate": 0.8936,
-      "cum_hit_rate": 0.8567,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cum_hit_rate": 0.8632,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 7549747200,
-        "full_attention": 8891924480
+        "sliding_window": 47294971904,
+        "full_attention": 21340618752
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 3
     },
     {
       "t": 44,
@@ -1273,15 +1273,15 @@
       "cached_tokens": 72832,
       "new_tokens": 8017,
       "turn_hit_rate": 0.9008,
-      "cum_hit_rate": 0.8589,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cum_hit_rate": 0.865,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 6509559808,
-        "full_attention": 9932111872
+        "sliding_window": 46254784512,
+        "full_attention": 22380806144
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 3
     },
     {
       "t": 45,
@@ -1300,15 +1300,15 @@
       "cached_tokens": 80768,
       "new_tokens": 8225,
       "turn_hit_rate": 0.9076,
-      "cum_hit_rate": 0.8615,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cum_hit_rate": 0.8673,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 5435817984,
-        "full_attention": 11005853696
+        "sliding_window": 45181042688,
+        "full_attention": 23454547968
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 3
     },
     {
       "t": 46,
@@ -1327,15 +1327,15 @@
       "cached_tokens": 88960,
       "new_tokens": 8377,
       "turn_hit_rate": 0.9139,
-      "cum_hit_rate": 0.8643,
-      "kv_usage": 0.957,
-      "blocks_used": 980,
-      "mem_bytes": 16441671680,
+      "cum_hit_rate": 0.8698,
+      "kv_usage": 0.9988,
+      "blocks_used": 4091,
+      "mem_bytes": 68635590656,
       "mem_by_type": {
-        "sliding_window": 4345298944,
-        "full_attention": 12096372736
+        "sliding_window": 44107300864,
+        "full_attention": 24528289792
       },
-      "sessions_in_memory": 1
+      "sessions_in_memory": 3
     }
   ]
 }
