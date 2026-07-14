@@ -1,0 +1,51 @@
+{
+  "meta": {
+    "model": "edge-cases (synthetic)",
+    "block_size": 4,
+    "num_blocks": 64,
+    "groups": [
+      {"id": 0, "attention_type": "full_attention"},
+      {"id": 1, "attention_type": "sliding_window"}
+    ],
+    "sessions": [{"id": 0, "label": "S0"}, {"id": 1, "label": "S1"}]
+  },
+  "content": {
+    "a": "SYS shared system prompt part one",
+    "b": "SYS shared system prompt part two",
+    "c": "S0 turn-1 question and context",
+    "d": "S0 turn-1 assistant output tail",
+    "e": "S1 turn-1 diverges here different task",
+    "f": "S1 turn-2 more context appended",
+    "g": "S1 turn-2 assistant output tail",
+    "x": "S0 turn-2 new delta after re-add"
+  },
+  "frames": [
+    {"t": 0, "s": 0, "ev": [
+      {"k": "s", "h": ["a", "b", "c"], "p": null, "g": 0, "kind": "full_attention"},
+      {"k": "s", "h": ["a", "b", "c"], "p": null, "g": 1, "kind": "sliding_window"}
+    ]},
+    {"t": 1, "s": 0, "ev": [{"k": "s", "h": ["d"], "p": "c", "g": 0}]},
+    {"t": 2, "s": 1, "ev": [
+      {"k": "s", "h": ["a", "b"], "p": null, "g": 0},
+      {"k": "s", "h": ["a", "b"], "p": null, "g": 1},
+      {"k": "s", "h": ["e"], "p": "b", "g": 0}
+    ]},
+    {"t": 3, "s": 1, "ev": [{"k": "s", "h": ["g"], "p": "f", "g": 0}]},
+    {"t": 4, "s": 1, "ev": [{"k": "s", "h": ["f"], "p": "e", "g": 0}]},
+    {"t": 5, "s": 0, "ev": [{"k": "r", "h": ["d"], "g": 0}]},
+    {"t": 6, "s": 0, "ev": [
+      {"k": "s", "h": ["x"], "p": "c", "g": 0},
+      {"k": "r", "h": ["c"], "g": 0},
+      {"k": "r", "h": ["c"], "g": 1}
+    ]},
+    {"t": 7, "s": 0, "ev": [
+      {"k": "s", "h": ["c"], "p": "b", "g": 0},
+      {"k": "s", "h": ["c"], "p": "b", "g": 1}
+    ]},
+    {"t": 8, "s": 1, "ev": [
+      {"k": "r", "h": ["g"], "g": 0},
+      {"k": "r", "h": ["f"], "g": 0},
+      {"k": "r", "h": ["e"], "g": 0}
+    ]}
+  ]
+}

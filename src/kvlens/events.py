@@ -120,18 +120,27 @@ def run(args: argparse.Namespace) -> None:
         if ev:
             frames.append({"t": t, "s": sess, "ev": ev})
 
+    # Interleave sessions round-robin (turn 0 of every session, then turn 1 of
+    # every session, …) so they behave like parallel users hitting the server,
+    # not one finishing before the next starts. Each keeps its own context.
+    sess = [
+        {"i": i, "turns": session_turns(traces[idx]), "run": []}
+        for i, idx in enumerate(indices)
+    ]
     t = 0
-    for sess_i, idx in enumerate(indices):
-        running_ids: list[int] = []
-        for human_text, gpt_text in session_turns(traces[idx]):
+    for turn_i in range(max((len(s["turns"]) for s in sess), default=0)):
+        for s in sess:
+            if turn_i >= len(s["turns"]):
+                continue
+            human_text, gpt_text = s["turns"][turn_i]
             human_ids = tokenizer.encode(human_text)
             gpt_ids = tokenizer.encode(gpt_text) if gpt_text else []
-            prompt_ids = running_ids + human_ids
+            prompt_ids = s["run"] + human_ids
             if len(prompt_ids) >= args.max_model_len:
-                break
+                continue
             max_out = max(1, min(len(gpt_ids) or 1, args.max_output_tokens))
             engine.add_request(
-                f"s{sess_i}-t{t}",
+                f"s{s['i']}-t{turn_i}",
                 TokensPrompt(prompt_token_ids=prompt_ids),
                 SamplingParams(
                     temperature=0.0,
@@ -145,10 +154,11 @@ def run(args: argparse.Namespace) -> None:
             )
             while engine.has_unfinished_requests():
                 engine.step()
-                drain_into_frame(t, sess_i)
+                drain_into_frame(t, s["i"])
                 t += 1
-            running_ids = prompt_ids + gpt_ids[:max_out]
-        print(f"session {sess_i} (trace #{idx}) done; frames so far: {len(frames)}")
+            s["run"] = prompt_ids + gpt_ids[:max_out]
+    for s in sess:
+        print(f"session {s['i']} (trace #{indices[s['i']]}): {len(s['turns'])} turns")
 
     total_events = sum(len(f["ev"]) for f in frames)
     run_data = {
