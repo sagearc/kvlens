@@ -1,6 +1,6 @@
 <div align="center">
 
-# kvlens
+# KVLens
 
 **See how vLLM's KV cache and scheduler actually behave — no GPU, no model weights.**
 
