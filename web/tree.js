@@ -287,8 +287,9 @@ async function main() {
   state.blockSize = run.meta.block_size;
   state.sessions = run.meta.sessions || [];
   for (const g of run.meta.groups) state.groupType.set(g.id, SHORT[g.attention_type] ?? "?");
-  $("#meta-line").textContent =
-    `${run.meta.model} · ${run.meta.groups.length} KV groups · block ${run.meta.block_size}`;
+  $("#meta-line").innerHTML =
+    `<span class="id">${run.meta.model.split("/").pop()}</span> · ` +
+    `${run.meta.groups.length} KV groups · block ${run.meta.block_size}`;
 
   const frames = run.frames;
   const seekTo = (t) => {

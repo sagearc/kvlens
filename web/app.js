@@ -30,9 +30,9 @@ async function main() {
   const { meta, groups, sessions, turns } = run;
 
   const shortModel = meta.model.split("/").pop();
-  $("#meta-line").textContent =
-    `${shortModel} · ${meta.dataset.traces} traces · capped at ` +
-    `${Math.round(meta.max_model_len / 1024)}K tokens`;
+  $("#meta-line").innerHTML =
+    `<span class="id">${shortModel}</span> · ${meta.dataset.traces} traces · ` +
+    `capped at ${Math.round(meta.max_model_len / 1024)}K tokens`;
   $("#groups-line").textContent = groupsSummary(groups, meta);
   const tileRefs = buildTiles();
   const chat = makeChatView(turns, sessions);
