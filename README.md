@@ -1,11 +1,14 @@
+<div align="center">
+
 # kvlens
 
-See how vLLM's KV cache and scheduler actually behave on real workloads — no GPU,
-no model weights.
+**See how vLLM's KV cache and scheduler actually behave — no GPU, no model weights.**
 
-![kvlens demo](docs/demo.gif)
+[**Live demo**](https://sagearc.github.io/kvlens/) &nbsp;·&nbsp; [vLLM simulator #47922](https://github.com/vllm-project/vllm/pull/47922)
 
-> **Live demo:** https://sagearc.github.io/kvlens/
+<img src="docs/demo.gif" alt="kvlens demo" width="860">
+
+</div>
 
 Evaluating KV-cache behavior normally means standing up the whole model. But for
 recorded traces the outputs are already known, so the weights don't matter — only
@@ -30,12 +33,14 @@ across sessions / evicted).
 
 ## Regenerate the data (optional)
 
-Needs vLLM with the simulator ([#47922](https://github.com/vllm-project/vllm/pull/47922),
-until it merges upstream):
+Needs vLLM with the KV-cache simulator
+([#47922](https://github.com/vllm-project/vllm/pull/47922), until it lands
+upstream), built from source — see the
+[vLLM CPU build-from-source guide](https://docs.vllm.ai/en/stable/getting_started/installation/cpu/#build-wheel-from-source).
+Then:
 
 ```bash
-VLLM_USE_PRECOMPILED=1 uv pip install -e '.[capture]'
-kvlens capture --traces <trace.json> --indices 3,335,360   # ShareGPT format
+kvlens capture --traces <trace.json> --indices 0,1,2   # ShareGPT format
 kvlens serve
 ```
 
