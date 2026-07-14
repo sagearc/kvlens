@@ -45,7 +45,7 @@ def run(args: argparse.Namespace) -> None:
 
     from vllm import SamplingParams, TokensPrompt
 
-    engine, snapshots = build_engine(
+    engine, _snapshots = build_engine(
         args.model, args.max_model_len, args.kv_cache_memory_bytes
     )
     core = engine.engine_core.engine_core
@@ -65,6 +65,59 @@ def run(args: argparse.Namespace) -> None:
         return out
 
     sched.schedule = schedule_wrapped
+
+    # Realistic memory: track blocks resident in the pool from its own event
+    # stream. Finished requests keep their blocks cached (prefix reuse), so the
+    # resident set accumulates across sessions and only shrinks on eviction —
+    # unlike per-request usage, which resets when a request frees its slots.
+    from vllm.distributed.kv_events import (
+        AllBlocksCleared,
+        BlockRemoved,
+        BlockStored,
+    )
+
+    mgr = core.scheduler.kv_cache_manager
+    mgr.enable_kv_cache_events = True
+    mgr.block_pool.enable_kv_cache_events = True
+    _pending: list = []
+    _take = mgr.take_events
+
+    def _take_teed():
+        evs = _take()
+        if evs:
+            _pending.extend(evs)
+        return evs
+
+    mgr.take_events = _take_teed
+
+    live: dict[int, set] = {g["id"]: set() for g in groups}  # group -> {hash}
+    owner: dict[str, int] = {}  # hash -> session that first stored it
+
+    def _hs(h):
+        return h.hex() if isinstance(h, (bytes, bytearray)) else str(h)
+
+    def drain(sess: int) -> None:
+        for e in _pending:
+            if isinstance(e, BlockStored):
+                for h in e.block_hashes or []:
+                    hs = _hs(h)
+                    live.setdefault(e.group_idx, set()).add(hs)
+                    owner.setdefault(hs, sess)
+            elif isinstance(e, BlockRemoved):
+                for h in e.block_hashes or []:
+                    hs = _hs(h)
+                    if e.group_idx is None:
+                        for s in live.values():
+                            s.discard(hs)
+                    else:
+                        live.get(e.group_idx, set()).discard(hs)
+                    if not any(hs in s for s in live.values()):
+                        owner.pop(hs, None)
+            elif isinstance(e, AllBlocksCleared):
+                for s in live.values():
+                    s.clear()
+                owner.clear()
+        _pending.clear()
 
     turns_out: list[dict] = []
     sessions_out: list[dict] = []
@@ -86,7 +139,6 @@ def run(args: argparse.Namespace) -> None:
 
             max_out = max(1, min(len(gpt_ids) or 1, args.max_output_tokens))
             req_id = f"s{sess_i}-t{session_turn_count}"
-            start = len(snapshots)
             # add_request returns the engine-assigned id (a random suffix is
             # appended); use it to read back the captured cached-prefix length.
             assigned = engine.add_request(
@@ -109,8 +161,16 @@ def run(args: argparse.Namespace) -> None:
             prompt_len = len(prompt_ids)
             cum_cached += cached
             cum_input += prompt_len
-            turn_snaps = snapshots[start:]
-            usage = round(max((s.kv_cache_usage for s in turn_snaps), default=0.0), 4)
+            drain(sess_i)
+            resident = sum(len(s) for s in live.values())
+            mem_by_type: dict[str, int] = {}
+            for g in groups:
+                gb = len(live.get(g["id"], ())) * g["page_bytes"] * g["num_layers"]
+                mem_by_type[g["attention_type"]] = (
+                    mem_by_type.get(g["attention_type"], 0) + gb
+                )
+            nb = kv_cache_config.num_blocks
+            usage = round(resident / nb, 4) if nb else 0.0
 
             turns_out.append(
                 {
@@ -136,7 +196,10 @@ def run(args: argparse.Namespace) -> None:
                     if cum_input
                     else 0.0,
                     "kv_usage": usage,
-                    "blocks_used": round(usage * kv_cache_config.num_blocks),
+                    "blocks_used": resident,
+                    "mem_bytes": sum(mem_by_type.values()),
+                    "mem_by_type": mem_by_type,
+                    "sessions_in_memory": len(set(owner.values())),
                 }
             )
             running_ids = prompt_ids + gpt_ids[:max_out]
@@ -161,6 +224,7 @@ def run(args: argparse.Namespace) -> None:
             "model": args.model,
             "block_size": groups[0]["block_size"] if groups else None,
             "num_blocks": kv_cache_config.num_blocks,
+            "kv_pool_bytes": args.kv_cache_memory_bytes,
             "max_model_len": args.max_model_len,
             "hybrid": len(groups) > 1,
             "dataset": {

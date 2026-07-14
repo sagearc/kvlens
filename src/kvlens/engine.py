@@ -53,9 +53,17 @@ def build_groups(kv_cache_config) -> list[dict]:
                 "num_layers": len(group.layer_names),
                 "block_size": getattr(spec, "block_size", None),
                 "sliding_window": getattr(spec, "sliding_window", None),
+                "page_bytes": _page_bytes(spec),
             }
         )
     return groups
+
+
+def _page_bytes(spec) -> int:
+    try:
+        return int(spec.page_size_bytes)  # KV bytes per block, one layer
+    except Exception:
+        return 0
 
 
 def make_capture_logger(sink: list):
