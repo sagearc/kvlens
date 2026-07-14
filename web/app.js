@@ -53,6 +53,7 @@ async function main() {
     }
     renderLegend(turns, sessions, t);
     drawSpark(turns, sessions, t);
+    renderMemBar(turn);
     chat.upTo(t);
     $("#step-label").textContent = `turn ${t + 1} / ${turns.length}`;
   };
@@ -65,6 +66,22 @@ function groupsSummary(groups, meta) {
   for (const g of groups) counts[g.attention_type] = (counts[g.attention_type] || 0) + 1;
   const parts = Object.entries(counts).map(([k, v]) => `${v}× ${k.replace(/_/g, "-")}`);
   return `${parts.join(" · ")} · block ${meta.block_size}`;
+}
+
+// how much memory each attention type holds — full-attention keeps the whole
+// context, sliding-window is capped, so the split shifts as context grows.
+const ATTN_COLOR = { full_attention: "var(--s0)", sliding_window: "var(--s1)",
+  mamba: "var(--s2)", mla: "var(--s3)", chunked_local: "var(--s4)" };
+function renderMemBar(turn) {
+  const entries = Object.entries(turn.mem_by_type || {}).sort((a, b) => b[1] - a[1]);
+  const total = entries.reduce((a, [, b]) => a + b, 0) || 1;
+  const c = (k) => ATTN_COLOR[k] || "var(--muted)";
+  $("#membar-track").innerHTML = entries
+    .map(([k, b]) => `<span class="seg" style="flex-grow:${b / total};background:${c(k)}"></span>`)
+    .join("");
+  $("#membar-legend").innerHTML = entries
+    .map(([k, b]) => `<span><i style="background:${c(k)}"></i>${k.replace(/_/g, "-")} · ${(b / 1e9).toFixed(1)} GB</span>`)
+    .join("");
 }
 
 function buildTiles() {
