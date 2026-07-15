@@ -13,23 +13,35 @@ and real data over anything invented.
 
 ## 1. Architecture
 
-Two decoupled halves, connected only by a JSON file:
+Two decoupled halves, connected only by a **view-model** (the same JSON shape
+whether it arrives from a static file or an SSE stream):
 
 ```
-capture (Python)  ──►  web/*.json  ──►  static web app (vanilla ES modules)
-  drives the real         the only          renders + plays it back
-  vLLM engine             contract
+capture + derivation (Python)  ──►  view-model  ──►  web app = thin painter
+  drives the real vLLM engine        the only          builds DOM, no derivation
+  AND derives the render model       contract          (vanilla ES modules)
+                                    file │ SSE
 ```
 
-- **Capture** (`src/kvlens/`: `capture.py`, `events.py`, `engine.py`,
-  `traces.py`, exposed via the `kvlens` CLI) runs vLLM in `--simulate-forward`
-  and writes a JSON artifact. Needs the vLLM simulate-forward build (`[capture]`
-  extra).
-- **Web** (`web/`) is a no-build static app that `fetch`es that JSON and renders
-  it. No bundler, no framework, no npm install. It ships with a sample artifact
-  so it runs with zero Python and no vLLM.
-- The JSON schema **is the contract.** Keep the two halves independent: the web
-  app must render any valid artifact; capture must never assume UI details.
+- **Capture + derivation** (`src/kvlens/`: `capture.py`, `events.py`,
+  `engine.py`, `traces.py`, and `tree.py` — the radix-tree engine, exposed via
+  the `kvlens` CLI) runs vLLM in `--simulate-forward` and derives the render
+  view-model in Python. Needs the vLLM simulate-forward build (`[capture]`
+  extra). **All tree logic lives in `tree.py`** (run-merging, prune/dim,
+  divergence, leaf counts) — see §8 — so it is unit-testable and shared by every
+  delivery path.
+- **Web** (`web/`) is a no-build static app that `fetch`es the view-model (or
+  receives it over SSE) and **only paints** it — it derives nothing. No bundler,
+  no framework, no npm install. It ships with a sample artifact so it runs with
+  zero Python and no vLLM.
+- **Delivery:** the default `kvlens serve` is a zero-dependency stdlib static
+  server. `kvlens serve --replay|--live` (in `server.py`, the `[serve]` extra)
+  streams the *same* view-model over server-sent events — `--live` from a real
+  vLLM run, consumed by `web/transport.js`'s `EventSource` mode. Live inherently
+  needs a running server; the static file demo needs none.
+- The view-model **is the contract.** Keep the two halves independent: the web
+  app must paint any valid view-model; capture/derivation must never assume UI
+  details. Client-side state is limited to collapse and the detail drawer.
 
 There are two tabs (`index.html` = Sessions, `tree.html` = Radix tree). They are
 **independent pages** sharing tokens and conventions, not a SPA. Adding a tab =
@@ -181,9 +193,11 @@ Before opening a PR:
 
 - **Look at it.** Open (or screenshot) the result in light *and* dark; check for
   label collisions, overflow, and geometry. The palette validator checks color,
-  not layout.
-- Verify the artifact still validates against the schema in the README, and that
-  the UI degrades cleanly if a field is missing.
+  not layout. To exercise the live path, `kvlens serve --replay` then open
+  `tree.html?live=1`.
+- If you touched the tree engine, run `make test` — `tests/test_tree.py` pins the
+  §8 invariants and edge cases. Verify the view-model still matches §8 and that
+  the painter degrades cleanly if a field is missing.
 - Keep the diff small and the reasoning defensible end-to-end (a human must
   understand and defend every line — pure agent PRs are not acceptable).
 
@@ -199,9 +213,31 @@ doubt: fewer elements, more whitespace, honest numbers, one accent color.
 
 ## 8. Radix-tree logic (tab 2) — rules, invariants, edge cases
 
-This is the authoritative spec for `web/tree.js`. It exists so an agent can
-change the tree without re-deriving these rules. If you change behavior, update
-this section in the same commit.
+This is the authoritative spec for the radix-tree engine, which lives in
+**`src/kvlens/tree.py`** (Python). `web/tree.js` is a thin painter that only
+builds DOM from the view-model this engine emits — it derives nothing. It exists
+so an agent can change the tree without re-deriving these rules. If you change
+behavior, update this section **and** `tests/test_tree.py` in the same commit.
+
+**View-model (the contract `tree.py` → painter).** `view_model()` returns
+`{roots, stats, legend}` per frame; the SSE/file wrapper adds `{t, s, vm}` (live
+frames also carry a `contentDelta` hash→text map). `roots` (and each branch
+`body`) is an ordered list of items:
+
+- `{kind:"run", who, showWho, color, shared, evicted, types[], count, toks,
+  leaves, snippet, stubCount, blocks:[[hash,type],…], stubBlocks:[[hash,type],…]}`
+  — a merged pill. `color` is a **semantic token** (`shared`/`evicted`/`sess-N`),
+  never a hex value; the painter maps it to `var(--token)` (§3.2).
+- `{kind:"diverge", paths}` — the fork marker.
+- `{kind:"branch", rootHash, who, color, blockCount, leaves, body:[…]}` — a
+  collapsible thread. **Collapse is pure client UI** (a `Set` of `rootHash`),
+  never in the view-model; the painter always receives the full `body` and just
+  hides collapsed ones.
+
+`stats = {sharedBlocks, divergences, total, dim}`; `legend = [{token, label}]`.
+The rules below define how these are derived; conservation (§8.11) —
+`Σ(run.count) + Σ(run.stubCount) == stats.total` — is asserted every frame in
+`tests/test_tree.py` over the `kv_events_edge.json` fixture and the real sample.
 
 ### 8.1 Data model (granular; everything else is derived at render)
 - One node per **block hash**, in a `Map<hash, node>`. `node = { h, parentH,
