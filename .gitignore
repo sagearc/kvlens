@@ -17,3 +17,10 @@ examples/demo_trace.json
 
 # OS / editor
 .DS_Store
+
+notes
+
+# Scratch / local tooling — notebooks, ripgrep ignores, editor state
+sandbox.ipynb
+.ipynb_checkpoints/
+.ignore/
