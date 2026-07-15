@@ -35,3 +35,23 @@ export function makeTransport({ count, stepMs, param, onStep }) {
   if (s) { go(Math.round(s.frac * (count - 1))); if (s.playing) play(); return; }
   go(0); play();                                       // first visit → autostart
 }
+
+// Live playback over SSE: frames arrive from the Python server (replay or live
+// vLLM) instead of a static file. Same render path — `onFrame(msg, i)` mirrors
+// the file mode's `onStep(t)`. A `meta` message arrives first, then `frame`s.
+export function makeLiveTransport({ url, onMeta, onFrame }) {
+  const body = document.body;
+  body.classList.add("playing");
+  const eventSource = new EventSource(url);
+  let frameIndex = 0;
+  eventSource.onmessage = (event) => {
+    const message = JSON.parse(event.data);
+    if (message.type === "meta") onMeta(message.meta);
+    else if (message.type === "frame") onFrame(message, frameIndex++);
+  };
+  // Stream end / drop is normal — stop the pulse; keep the last frame on screen.
+  eventSource.onerror = () => {
+    eventSource.close();
+    body.classList.remove("playing");
+  };
+}
