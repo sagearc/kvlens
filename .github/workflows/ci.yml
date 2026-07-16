@@ -15,7 +15,6 @@ jobs:
           python-version: "3.12"
       # Install only the base package + dev tools. Never the `capture` extra:
       # it pulls a git build of vLLM (CUDA/numpy) that has no place in CI.
-      - run: uv venv
       - run: uv pip install -e '.[dev]'
       - run: |
           source .venv/bin/activate

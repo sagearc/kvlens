@@ -340,8 +340,13 @@ class RadixTree:
                     )
                     # inside a branch, pills inherit its session → omit the label
                     self._build_chain(
-                        child_hash, branch_body, placed, child_index, sizes,
-                        leaf_count, self._session_key(node),
+                        child_hash,
+                        branch_body,
+                        placed,
+                        child_index,
+                        sizes,
+                        leaf_count,
+                        self._session_key(node),
                     )
             return
 
@@ -450,7 +455,5 @@ def derive_frames(artifact: dict) -> list[dict]:
         session = frame.get("s", 0)
         for event in frame["ev"]:
             tree.apply(event, session)
-        derived_frames.append(
-            {"t": frame["t"], "s": session, "vm": tree.view_model()}
-        )
+        derived_frames.append({"t": frame["t"], "s": session, "vm": tree.view_model()})
     return derived_frames

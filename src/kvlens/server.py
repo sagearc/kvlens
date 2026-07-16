@@ -142,11 +142,13 @@ def serve(args: Namespace) -> None:
 
     web_dir = Path(args.dir)
     if args.live:
+
         def message_source() -> AsyncIterator[dict]:
             return _live_source(args)
 
         mode = "live vLLM"
     else:
+
         def message_source() -> AsyncIterator[dict]:
             return _replay_source(Path(args.data), args.interval)
 

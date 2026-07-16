@@ -41,6 +41,9 @@ Issues = "https://github.com/sagearc/kvlens/issues"
 [tool.hatch.build.targets.wheel]
 packages = ["src/kvlens"]
 
+[tool.hatch.metadata]
+allow-direct-references = true
+
 [tool.ruff]
 line-length = 88
 target-version = "py310"
