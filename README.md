@@ -31,6 +31,24 @@ python -m http.server 8000 --directory web   # → http://localhost:8000
 Two tabs: **Sessions** (per-turn cached vs new) and **Radix tree** (blocks shared
 across sessions / evicted).
 
+The web app is a thin painter: all radix-tree derivation (run-merging, prune/dim,
+divergence, leaf counts) runs in Python (`src/kvlens/tree.py`) and ships as a
+per-frame *view-model* the browser just draws. Same view-model, whether it comes
+from the static file or the live stream below.
+
+## Stream it live (optional)
+
+Instead of replaying a static file, serve the same view-model over
+server-sent events (needs the `serve` extra: `pip install -e '.[serve]'`):
+
+```bash
+kvlens serve --replay          # stream the committed sample over SSE (a demo)
+kvlens serve --live --traces <trace.json> --indices 0,1,2   # live vLLM (needs [capture])
+```
+
+Then open `http://localhost:8000/tree.html?live=1`. Plain `kvlens serve` stays a
+zero-dependency stdlib static server.
+
 ## Regenerate the data (optional)
 
 Needs vLLM with the KV-cache simulator

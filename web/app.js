@@ -9,12 +9,12 @@ const tpl = (id) => document.getElementById(id).content.firstElementChild;
 // so the real content (commands, paths) stays legible.
 const cleanText = (s) => s.replace(/lorem ipsum(?:(?!\n\n)[\s\S])*/gi, "⟨redacted prose⟩");
 const STEP_MS = 500; // 0.5 seconds per turn
-// Deterministic per-session faces (DiceBear); avatars are per session, not per
+// Deterministic per-session identicons (DiceBear); avatars are per session, not per
 // message, so only a handful load and each is browser-cached. Falls back to a
 // colored initial circle if offline (see img.onerror).
-const AVATAR_STYLE = "avataaars";
+const AVATAR_STYLE = "identicon";
 const avatarUrl = (seed) =>
-  `https://api.dicebear.com/9.x/${AVATAR_STYLE}/svg?seed=${encodeURIComponent(seed)}`;
+  `https://api.dicebear.com/10.x/${AVATAR_STYLE}/svg?seed=${encodeURIComponent(seed)}`;
 
 const TILES = [
   { key: "mem", label: "KV memory", val: (t) => `${((t.mem_bytes || 0) / 1e9).toFixed(1)} GB`,

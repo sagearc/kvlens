@@ -20,6 +20,9 @@ classifiers = [
 dependencies = ["pydantic>=2"]
 
 [project.optional-dependencies]
+# Live SSE streaming (`kvlens serve --replay|--live`). The default `serve` is a
+# zero-dependency stdlib static server, so most users never install this.
+serve = ["fastapi>=0.110", "uvicorn>=0.29"]
 # Capture depends on the native KV-cache simulator (`--simulate-forward`),
 # vllm-project/vllm#47922. Until it lands upstream, track the branch; once it
 # merges, replace this with a plain version pin (e.g. "vllm>=<version>").
