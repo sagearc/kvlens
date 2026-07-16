@@ -1,0 +1,24 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: astral-sh/setup-uv@v5
+        with:
+          python-version: "3.12"
+      # Install only the base package + dev tools. Never the `capture` extra:
+      # it pulls a git build of vLLM (CUDA/numpy) that has no place in CI.
+      - run: uv venv
+      - run: uv pip install -e '.[dev]'
+      - run: |
+          source .venv/bin/activate
+          ruff check .
+          ruff format --check .
+          pytest

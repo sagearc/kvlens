@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>KV-Cache Radix Tree — live</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="tree.css" />
+</head>
+<body class="viz-root">
+  <div class="app">
+  <header class="topbar">
+    <div class="title">
+      <nav class="tabs">
+        <a href="index.html">Sessions</a>
+        <a href="tree.html" class="on" aria-current="page">Radix tree</a>
+        <span class="live" id="live">● live</span>
+      </nav>
+      <p class="sub" id="meta-line">loading…</p>
+    </div>
+    <div class="transport">
+      <button id="play" class="btn" aria-label="play / pause">❚❚</button>
+      <input id="scrub" class="scrub" type="range" min="0" max="0" value="0" aria-label="timeline" />
+      <span id="step-label" class="mono">0 / 0</span>
+    </div>
+  </header>
+
+  <section class="panel">
+    <div class="toolbar">
+      <div class="legend" id="legend"></div>
+      <div class="stats mono" id="stats"></div>
+    </div>
+    <!-- merging of adjacent same-type blocks happens at render time, not in data -->
+    <main class="tree" id="tree"></main>
+  </section>
+
+  <aside class="detail" id="detail" hidden>
+    <div class="detail-head"><span id="detail-title"></span>
+      <button class="x" id="detail-close" aria-label="close">✕</button></div>
+    <div class="detail-body" id="detail-body"></div>
+  </aside>
+  </div>
+
+  <script type="module" src="tree.js"></script>
+</body>
+</html>

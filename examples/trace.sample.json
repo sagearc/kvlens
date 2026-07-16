@@ -1,0 +1,10 @@
+[
+  {
+    "conversations": [
+      { "from": "human", "value": "Command: /bin/bash -lc \"ls\"\nProcess exited with code 0\napp/  tests/  README.md" },
+      { "from": "gpt", "value": "I'll inspect the repository layout before making changes." },
+      { "from": "human", "value": "Command: /bin/bash -lc \"cat app/parser.py\"\nProcess exited with code 0" },
+      { "from": "gpt", "value": "Plan: fix the off-by-one in parse() and add a regression test." }
+    ]
+  }
+]

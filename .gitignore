@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+*.egg-info/
+dist/
+build/
+.pytest_cache/
+.ruff_cache/
+
+# Real trace datasets & private captures — never commit; the shipped demo data
+# is synthetic (see SECURITY.md). A pre-commit hook also guards web/*.json.
+codex_swebenchpro.json
+*.private.json
+*.local.json
+examples/demo_trace.json
+
+# OS / editor
+.DS_Store

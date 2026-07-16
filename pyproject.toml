@@ -1,0 +1,50 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "kvlens"
+version = "0.1.0"
+description = "A lens on the KV cache: watch prefix reuse in agentic LLM traces, simulated on CPU."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+authors = [{ name = "Sage Ahrac" }]
+keywords = ["llm", "kv-cache", "prefix-cache", "vllm", "visualization", "agentic"]
+classifiers = [
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Topic :: Scientific/Engineering :: Visualization",
+]
+# The viewer + trace loader need almost nothing.
+dependencies = ["pydantic>=2"]
+
+[project.optional-dependencies]
+# Capture depends on the native KV-cache simulator (`--simulate-forward`),
+# vllm-project/vllm#47922. Until it lands upstream, track the branch; once it
+# merges, replace this with a plain version pin (e.g. "vllm>=<version>").
+# Most users just view the shipped sample and never install this.
+capture = ["vllm @ git+https://github.com/sagearc/vllm.git@kv-cache-simulator"]
+dev = ["ruff>=0.6", "pytest>=8", "pre-commit>=3"]
+
+[project.scripts]
+kvlens = "kvlens.cli:main"
+
+[project.urls]
+Homepage = "https://github.com/sagearc/kvlens"
+Demo = "https://sagearc.github.io/kvlens/"
+Issues = "https://github.com/sagearc/kvlens/issues"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/kvlens"]
+
+[tool.ruff]
+line-length = 88
+target-version = "py310"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "UP", "B"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"
